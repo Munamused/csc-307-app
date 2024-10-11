@@ -61,32 +61,48 @@ const findUserbyNameAndJob = (name, job) => {
   );
 };
 
+const idGen = (length) => {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let i = 0;
+  while (i < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    i += 1;
+  }
+  return result;
+}
+
 const addUser = (user) => {
-  users["users_list"].push(user);
+  users['users_list'].push(user);
   return user;
 };
 
 const delById = (id) => {
-  const isId = (user) => user["id"] === id;
-  const idx = users["users_list"].findIndex(isId);
-  return users["users_list"].splice(idx, 1);
+  const index = users["users_list"].findIndex(existingUser => existingUser.id === userId);
+  if(index !== -1) {
+    const deletedUser = users["users_list"].splice(index, 1)[0];
+    return deletedUser;    
+  } else {
+    return null;
+  }
 };
 
-app.delete('/users/:id', (req, res) => {
-  const id = req.params["id"];
-  let result = findUserById(id);
-  if (result === undefined) {
+app.delete("/users", (req, res) => {
+  const id = req.body.id; 
+  const result = deleteUserById(id);
+  if (result === null) {
     res.status(404).send("Resource not found.");
   } else {
-    delById(id);
-    res.send("DELETE Request Called");
+    res.status(204).send();
   }
 });
 
-app.post("/users", (req, res) => {
-  const userToAdd = req.body;
+app.post("/users", (req, res) => { // 201
+  const userId = idGen(6);
+  const userToAdd = {id: userId.toString(), name: req.body.name, job: req.body.job};
   addUser(userToAdd);
-  res.send();
+  res.status(201).json(userToAdd);
 });
 
 app.get("/", (req, res) => {
