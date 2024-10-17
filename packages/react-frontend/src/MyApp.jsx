@@ -12,17 +12,17 @@ function MyApp() {
     // });
     // setCharacters(updated);
     const person = characters[index]
-    const updated = characters.filter((character, i) => {return i !== index;});
+    const updated = characters.filter((characters, i) => {return i !== index;});
         
-    deleteCharacter(person)
+    deleteUser(person)
     .then(()=>setCharacters(updated))
     .catch((error)=>{
       console.log(error)
     });
   }
 
-  function deleteCharacter(person) {
-    const promise = fetch(`http://localhost:8000/users`,{
+  function deleteUser(person) {
+    const promise = fetch(`http://localhost:8000/users/${person.id}`,{
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -30,9 +30,8 @@ function MyApp() {
       body: JSON.stringify(person),
     })
     .then((res)=>{
-      if (res.status === 202)
-        return res.json(person.id)
-      
+      if (res.status === 204)
+        return res.json(person._id);
     })
     .catch((error)=>{
         console.log(error);
@@ -42,6 +41,13 @@ function MyApp() {
 
   function updateList(person) { 
     postUser(person)
+      .then((response) => {
+        if (response.status === 201) {
+          return response.json()
+        } else {
+          throw new Error('Failed To Add User');
+        }
+      })
       .then((newPerson) => setCharacters([...characters, newPerson]))
       .catch((error) => {
         console.log(error);
@@ -53,30 +59,22 @@ function MyApp() {
     return promise;
   }
 
-  async function postUser(person) {
-    const promise = fetch("Http://localhost:8000/users", {
+  function postUser(person) {
+    const promise = fetch("http://localhost:8000/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(person)
-    })
-    .then((res)=>{
-      if (res.status !== 201)
-        throw new Error("Not 201, insertion not successful")
-      else
-        return res.json()
-    })
-    .catch((error)=>{
-        console.log(error);
     });
+
     return promise;
   }
 
   useEffect(() => {
     fetchUsers()
       .then((res) => res.json())
-      .then((json) => setCharacters(json["users_list"]))
+      .then((json) => setCharacters(json["user_list"]))
       .catch((error) => { console.log(error); });
   }, [] );
 
