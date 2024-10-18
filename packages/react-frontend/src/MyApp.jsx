@@ -13,16 +13,21 @@ function MyApp() {
     // setCharacters(updated);
     const person = characters[index]
     const updated = characters.filter((characters, i) => {return i !== index;});
-        
-    deleteUser(person)
-    .then(()=>setCharacters(updated))
-    .catch((error)=>{
-      console.log(error)
-    });
+
+    if (person && person._id) {
+      deleteUser(person)
+      .then(()=>setCharacters(updated))
+      .catch((error)=>{
+        console.log(error)
+      });
+    }
+    else {
+      console.error("User or user id is non-existent");
+    }
   }
 
   function deleteUser(person) {
-    const promise = fetch(`http://localhost:8000/users/${person.id}`,{
+    const promise = fetch(`http://localhost:8000/users/${person._id}`,{
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

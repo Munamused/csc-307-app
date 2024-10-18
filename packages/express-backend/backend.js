@@ -21,7 +21,6 @@ const idGen = (length) => {
   return result;
 }
 
-
 app.delete("/users/:id", (req, res) => {
   const id = req.params.id; 
   console.log("Deleting user with ID:", id); // Debugging line
@@ -35,7 +34,7 @@ app.delete("/users/:id", (req, res) => {
 
 app.post("/users", async(req, res) => { // 201
   const userId = idGen(6);
-  const userToAdd = {id: userId.toString(), name: req.body.name, job: req.body.job};
+  const userToAdd = {id: userId, name: req.body.name, job: req.body.job};
   user_services.addUser(userToAdd).then((result) => 
     res.status(201).send(result));
 });
